@@ -1,8 +1,8 @@
 part of 'quote_bloc.dart';
 
-abstract class QuoteEvent extends Equatable {
+sealed class QuoteEvent {
   const QuoteEvent();
-
-  @override
-  List<Object> get props => [];
 }
+
+
+class QuotesFetched extends QuoteEvent {}
