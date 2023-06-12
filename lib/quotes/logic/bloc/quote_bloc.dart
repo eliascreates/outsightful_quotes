@@ -34,7 +34,6 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
     try {
       if (state.status == QuoteStatus.initial) {
         final results = await _fetchResults();
-        print('xxxxxxxxxxxxx: $results');
         emit(state.copyWith(
           status: QuoteStatus.success,
           result: results,
@@ -47,10 +46,14 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       emit(
         results.quotes.isEmpty
             ? state.copyWith(hasReachedMax: true)
-            : state.copyWith(status: QuoteStatus.success, result: results),
+            : state.copyWith(
+                status: QuoteStatus.success,
+                result: state.result?.copyWith(
+                  quotes: List.of(state.result!.quotes)..addAll(results.quotes),
+                ),
+              ),
       );
     } catch (_) {
-      print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
       emit(state.copyWith(status: QuoteStatus.failure));
     }
   }
@@ -64,7 +67,6 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
     if (response.statusCode == 200) {
       return Result.fromJson(response.body);
     }
-    print('noooo');
     throw Exception('Failed to fetch Results');
   }
 }

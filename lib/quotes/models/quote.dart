@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 class Result {
-  Result({required this.pagination, required this.quotes});
-  
+  const Result({required this.pagination, required this.quotes});
+
   final Pagination pagination;
   final List<Quote> quotes;
 
@@ -14,6 +14,12 @@ class Result {
       pagination: pagination ?? this.pagination,
       quotes: quotes ?? this.quotes,
     );
+  }
+
+  factory Result.empty() {
+    return const Result(
+        pagination: Pagination(currentPage: 1, nextPage: 2, totalPages: 10),
+        quotes: <Quote>[]);
   }
 
   factory Result.fromMap(Map<String, dynamic> map) {
@@ -34,14 +40,13 @@ class Result {
   String toString() {
     return 'Quote(pagination: $pagination, data: ${quotes.length})';
   }
-
 }
 
 class Pagination {
   final int currentPage;
   final int nextPage;
   final int totalPages;
-  Pagination({
+  const Pagination({
     required this.currentPage,
     required this.nextPage,
     required this.totalPages,
@@ -55,7 +60,8 @@ class Pagination {
     );
   }
 
-  factory Pagination.fromJson(String source) => Pagination.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Pagination.fromJson(String source) =>
+      Pagination.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class Quote {
@@ -63,7 +69,7 @@ class Quote {
   final String quoteText;
   final String quoteAuthor;
   final String quoteGenre;
-  Quote({
+  const Quote({
     required this.id,
     required this.quoteText,
     required this.quoteAuthor,
@@ -77,7 +83,7 @@ class Quote {
     String? quoteGenre,
   }) {
     return Quote(
-    id: id ?? this.id,
+      id: id ?? this.id,
       quoteText: quoteText ?? this.quoteText,
       quoteAuthor: quoteAuthor ?? this.quoteAuthor,
       quoteGenre: quoteGenre ?? this.quoteGenre,
@@ -100,5 +106,4 @@ class Quote {
   String toString() {
     return 'Data(_id: $id, quoteText: $quoteText, quoteAuthor: $quoteAuthor, quoteGenre: $quoteGenre)';
   }
-
 }
