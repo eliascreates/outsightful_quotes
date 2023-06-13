@@ -2,9 +2,8 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:outsightful_quotes/quotes/logic/cubit/theme_cubit.dart';
-import 'package:outsightful_quotes/quotes/logic/utils/quote_observer.dart';
-import 'package:outsightful_quotes/quotes/presentation/screens/quote_screen.dart';
+
+import 'quotes/quotes.dart';
 
 void main() {
   Bloc.observer = QuoteObserver();

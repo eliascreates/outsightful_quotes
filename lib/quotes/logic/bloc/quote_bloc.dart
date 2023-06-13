@@ -2,13 +2,16 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import '../../models/quote.dart';
+import 'package:outsightful_quotes/quotes/models/pagination.dart';
 import 'package:stream_transform/stream_transform.dart';
+
+import 'package:outsightful_quotes/core/values.dart';
+import 'package:outsightful_quotes/quotes/models/result.dart';
+
+import '../../models/quote.dart';
 
 part 'quote_event.dart';
 part 'quote_state.dart';
-
-const throttleDuration = Duration(milliseconds: 100);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (event, mapper) {
@@ -19,12 +22,11 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   final http.Client httpClient;
 
-  QuoteBloc({required this.httpClient})
-      : super(const QuoteState(result: null)) {
+  QuoteBloc({required this.httpClient}) : super(const QuoteState()) {
     on<QuotesFetched>(_onQuotesFetched,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Values.throttleDuration));
 
-    on<QuotesRestared>((event, emit) => emit(const QuoteState(result: null)));
+    on<QuotesRestared>((event, emit) => emit(const QuoteState()));
   }
 
   Future<void> _onQuotesFetched(
@@ -43,15 +45,15 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
         ));
       }
       final results =
-          await _fetchResults(state.result?.pagination.nextPage as int);
+          await _fetchResults(state.result.pagination.nextPage);
 
       emit(
         results.quotes.isEmpty
             ? state.copyWith(hasReachedMax: true)
             : state.copyWith(
                 status: QuoteStatus.success,
-                result: state.result?.copyWith(
-                  quotes: List.of(state.result!.quotes)..addAll(results.quotes),
+                result: state.result.copyWith(
+                  quotes: List.of(state.result.quotes)..addAll(results.quotes),
                 ),
               ),
       );

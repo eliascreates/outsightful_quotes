@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:outsightful_quotes/quotes/logic/bloc/quote_bloc.dart';
-import 'package:outsightful_quotes/quotes/presentation/screens/components/quotelist_item.dart';
+import 'quotelist_item.dart';
 
 class QuoteList extends StatefulWidget {
   const QuoteList({super.key});
@@ -34,15 +34,16 @@ class _QuoteListState extends State<QuoteList> {
                   const Text('Unable to Load Quotes'),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                      onPressed: () => context.read<QuoteBloc>()
-                        ..add(QuotesRestared())
-                        ..add(QuotesFetched()),
-                      child: const Text('Try Again!'))
+                    onPressed: () => context.read<QuoteBloc>()
+                      ..add(QuotesRestared())
+                      ..add(QuotesFetched()),
+                    child: const Text('Try Again!'),
+                  )
                 ],
               ),
             );
           case QuoteStatus.success:
-            final quotes = state.result!.quotes;
+            final quotes = state.result.quotes;
             if (quotes.isEmpty) {
               return const Center(
                 child: Text('No Quotes at the moment!'),
