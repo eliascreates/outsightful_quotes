@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outsightful_quotes/core/values.dart';
 import 'package:outsightful_quotes/quotes/logic/bloc/quote_bloc.dart';
 import 'quotelist_item.dart';
 
@@ -30,9 +31,9 @@ class _QuoteListState extends State<QuoteList> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.network_check, color: Theme.of(context).hintColor),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: Values.defaultPadding),
                   const Text('Unable to Load Quotes'),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: Values.defaultPadding),
                   ElevatedButton(
                     onPressed: () => context.read<QuoteBloc>()
                       ..add(QuotesRestared())
@@ -58,7 +59,7 @@ class _QuoteListState extends State<QuoteList> {
                     ? const Center(child: CircularProgressIndicator())
                     : index == 0
                         ? Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
+                            padding: const EdgeInsets.only(top: Values.defaultPadding),
                             child: QuoteListItem(quote: quotes[index]),
                           )
                         : QuoteListItem(quote: quotes[index]);

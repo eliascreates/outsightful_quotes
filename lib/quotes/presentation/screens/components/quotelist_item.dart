@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outsightful_quotes/core/values.dart';
 import 'package:outsightful_quotes/quotes/logic/cubit/theme_cubit.dart';
 import 'package:outsightful_quotes/quotes/models/quote.dart';
 
@@ -11,8 +12,8 @@ class QuoteListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15).copyWith(bottom: 20),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: Values.defaultPadding * 0.75).copyWith(bottom: Values.defaultPadding),
+      padding: const EdgeInsets.all(Values.defaultPadding),
       decoration: BoxDecoration(
           color: context.watch<ThemeCubit>().state.isDarkTheme
               ? Theme.of(context).primaryColorDark
@@ -38,13 +39,14 @@ class QuoteListItem extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 2),
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: Values.defaultPadding * 0.75),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Expanded(child: Divider(thickness: 0.5)),
+              const Expanded(child: Divider(thickness: 1)),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: Values.defaultPadding / 2),
                 child: Text(
                   quote.quoteAuthor,
                   style: Theme.of(context)
@@ -53,7 +55,7 @@ class QuoteListItem extends StatelessWidget {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-              const Expanded(child: Divider(thickness: 0.5)),
+              const Expanded(child: Divider(thickness: 1)),
             ],
           ),
         ],
