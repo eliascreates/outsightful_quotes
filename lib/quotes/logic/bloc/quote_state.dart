@@ -14,7 +14,6 @@ class QuoteState extends Equatable {
   final Result? result;
   final bool hasReachedMax;
   @override
-
   List<Object?> get props => [status, result, hasReachedMax];
 
   QuoteState copyWith({

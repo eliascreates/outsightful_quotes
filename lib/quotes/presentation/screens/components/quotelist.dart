@@ -25,8 +25,21 @@ class _QuoteListState extends State<QuoteList> {
       builder: (context, state) {
         switch (state.status) {
           case QuoteStatus.failure:
-            return const Center(
-              child: Text('Unable to Load Quotes'),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.network_check, color: Theme.of(context).hintColor),
+                  const SizedBox(height: 20),
+                  const Text('Unable to Load Quotes'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                      onPressed: () => context.read<QuoteBloc>()
+                        ..add(QuotesRestared())
+                        ..add(QuotesFetched()),
+                      child: const Text('Try Again!'))
+                ],
+              ),
             );
           case QuoteStatus.success:
             final quotes = state.result!.quotes;
@@ -38,7 +51,7 @@ class _QuoteListState extends State<QuoteList> {
             return ListView.builder(
               itemCount:
                   state.hasReachedMax ? quotes.length : quotes.length + 1,
-                  controller: _scrollController,
+              controller: _scrollController,
               itemBuilder: (context, index) {
                 return index >= quotes.length
                     ? const Center(child: CircularProgressIndicator())
@@ -63,7 +76,6 @@ class _QuoteListState extends State<QuoteList> {
 
   bool get _isBottom {
     if (!_scrollController.hasClients) return false;
-
 
     final maxScrollPos = _scrollController.position.maxScrollExtent;
     final currentScrollPos = _scrollController.offset;

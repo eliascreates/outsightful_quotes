@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outsightful_quotes/quotes/logic/cubit/theme_cubit.dart';
 import 'package:outsightful_quotes/quotes/models/quote.dart';
 
 class QuoteListItem extends StatelessWidget {
@@ -9,26 +11,50 @@ class QuoteListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5).copyWith(bottom: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 15).copyWith(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(20),
+          color: context.watch<ThemeCubit>().state.isDarkTheme
+              ? Theme.of(context).primaryColorDark
+              : Theme.of(context).cardColor,
+          borderRadius: context.watch<ThemeCubit>().state.isDarkTheme
+              ? BorderRadius.circular(10)
+              : null,
           boxShadow: [
             BoxShadow(
-                color: Colors.grey.shade300, blurRadius: 4.0, spreadRadius: 5)
-          ]),
+              color: Theme.of(context).shadowColor.withOpacity(0.2),
+              blurRadius: 3,
+              spreadRadius: 0.5,
+              offset: const Offset(-1, 1),
+            )
+          ],
+          border: Border.fromBorderSide(BorderSide(
+              color: Theme.of(context).primaryColor.withOpacity(0.1)))),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             quote.quoteText,
-            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 2),
           ),
-          const SizedBox(width: 15),
-          Text(
-            quote.quoteAuthor,
-            style: Theme.of(context).textTheme.titleMedium,
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Expanded(child: Divider(thickness: 0.5)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  quote.quoteAuthor,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Expanded(child: Divider(thickness: 0.5)),
+            ],
           ),
         ],
       ),

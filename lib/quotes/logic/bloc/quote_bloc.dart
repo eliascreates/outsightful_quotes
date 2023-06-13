@@ -23,6 +23,8 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
       : super(const QuoteState(result: null)) {
     on<QuotesFetched>(_onQuotesFetched,
         transformer: throttleDroppable(throttleDuration));
+
+    on<QuotesRestared>((event, emit) => emit(const QuoteState(result: null)));
   }
 
   Future<void> _onQuotesFetched(
