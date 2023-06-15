@@ -1,9 +1,13 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outsightful_quotes/quotes/logic/bloc/quote_bloc.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+
+import 'core/strings.dart';
+import 'quotes/quotes.dart';
 
 void main() {
+  Bloc.observer = QuoteObserver();
   runApp(const MyApp());
 }
 
@@ -12,35 +16,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<QuoteBloc>(
-      create: (context) =>
-          QuoteBloc(httpClient: http.Client())..add(QuotesFetched()),
-      child: MaterialApp(
-        title: 'Outsightful Quotes',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const Main(),
-      ),
+    return BlocProvider(
+      create: (context) => ThemeCubit(),
+      child: const QuoteApp(),
     );
   }
 }
 
-class Main extends StatelessWidget {
-  const Main({super.key});
+class QuoteApp extends StatelessWidget {
+  const QuoteApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<QuoteBloc, QuoteState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('Good Morning')),
-          body: Center(
-            child: Text('${state.result?.quotes[0].quoteText}'),
-          ),
-        );
-      },
+    return MaterialApp(
+      title: Strings.appTitle,
+      debugShowCheckedModeBanner: false,
+      theme: FlexThemeData.light(
+          scheme: FlexScheme.damask,
+          useMaterial3: false,
+          textTheme: GoogleFonts.figtreeTextTheme()),
+      darkTheme: FlexThemeData.dark(
+              scheme: FlexScheme.damask,
+              appBarBackground: const Color(0xff453028),
+              scaffoldBackground: const Color(0xff151515),
+              useMaterial3: false,
+              textTheme: GoogleFonts.figtreeTextTheme())
+          .copyWith(cardColor: Colors.brown.shade800),
+      themeMode: context.select((ThemeCubit cubit) => cubit.state.themeMode),
+      home: const QuoteScreen(),
     );
   }
 }
