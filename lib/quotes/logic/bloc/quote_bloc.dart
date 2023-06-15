@@ -13,11 +13,27 @@ import '../../models/quote.dart';
 part 'quote_event.dart';
 part 'quote_state.dart';
 
+List<String> genre = [
+  'business',
+  'inspirational',
+  'humor',
+  'happiness',
+  'knowledge',
+  'life',
+  'learning',
+  'love',
+  'science',
+  'success',
+  'technology',
+  'money',
+];
+
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (event, mapper) {
     return droppable<E>().call(event.throttle(duration), mapper);
   };
 }
+
 
 class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   final http.Client httpClient;
@@ -40,12 +56,14 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
         final results = await _fetchResults();
         emit(state.copyWith(
           status: QuoteStatus.success,
-          result: results,
+          result: results.copyWith(
+              quotes: results.quotes
+                  .where((quote) => quote.quoteText.length <= 100)
+                  .toList()),
           hasReachedMax: false,
         ));
       }
-      final results =
-          await _fetchResults(state.result.pagination.nextPage);
+      final results = await _fetchResults(state.result.pagination.nextPage);
 
       emit(
         results.quotes.isEmpty
@@ -53,7 +71,9 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
             : state.copyWith(
                 status: QuoteStatus.success,
                 result: state.result.copyWith(
-                  quotes: List.of(state.result.quotes)..addAll(results.quotes),
+                  quotes: List.of(state.result.quotes)
+                    ..addAll(results.quotes
+                        .where((quote) => quote.quoteText.length <= 100)),
                 ),
               ),
       );
@@ -63,9 +83,12 @@ class QuoteBloc extends Bloc<QuoteEvent, QuoteState> {
   }
 
   Future<Result> _fetchResults([int pageNum = 1]) async {
+    genre.shuffle();
+
     final response = await httpClient.get(
       Uri.parse(
-          'https://quote-garden.onrender.com/api/v3/quotes?page=$pageNum'),
+        'https://quote-garden.onrender.com/api/v3/quotes?page=$pageNum&genre=${genre.first}&limit=${Values.limit}',
+      ),
     );
 
     if (response.statusCode == 200) {

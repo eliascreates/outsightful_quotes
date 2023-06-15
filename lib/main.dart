@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'core/strings.dart';
 import 'quotes/quotes.dart';
 
 void main() {
@@ -28,16 +29,19 @@ class QuoteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Outsightful Quotes',
+      title: Strings.appTitle,
       debugShowCheckedModeBanner: false,
       theme: FlexThemeData.light(
           scheme: FlexScheme.damask,
           useMaterial3: false,
           textTheme: GoogleFonts.figtreeTextTheme()),
       darkTheme: FlexThemeData.dark(
-          scheme: FlexScheme.damask,
-          useMaterial3: false,
-          textTheme: GoogleFonts.figtreeTextTheme()),
+              scheme: FlexScheme.damask,
+              appBarBackground: const Color(0xff453028),
+              scaffoldBackground: const Color(0xff151515),
+              useMaterial3: false,
+              textTheme: GoogleFonts.figtreeTextTheme())
+          .copyWith(cardColor: Colors.brown.shade800),
       themeMode: context.select((ThemeCubit cubit) => cubit.state.themeMode),
       home: const QuoteScreen(),
     );

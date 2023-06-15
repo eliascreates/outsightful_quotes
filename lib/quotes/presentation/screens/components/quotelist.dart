@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rive/rive.dart';
+
 import 'package:outsightful_quotes/core/strings.dart';
 import 'package:outsightful_quotes/core/values.dart';
 import 'package:outsightful_quotes/quotes/logic/bloc/quote_bloc.dart';
+
 import '../../../quotes.dart';
+import 'display_message.dart';
 import 'quotelist_item.dart';
 
 class QuoteList extends StatefulWidget {
@@ -12,20 +17,19 @@ class QuoteList extends StatefulWidget {
   @override
   State<QuoteList> createState() => _QuoteListState();
 }
-//TODO: Add an Animation in Sliver App Bar
+
 class _QuoteListState extends State<QuoteList> {
   final _scrollController = ScrollController();
-  // late RiveAnimationController _bookController;
+
+  SMIInput<bool>? _isDropped;
+  Artboard? _bookArtboard;
+
   @override
   void initState() {
     super.initState();
-    // _bookController = OneShotAnimation(
-    //   'bounce',
-    //   autoplay: false,
-    //   onStop: () => {},
-    //   onStart: () => {},
-    // );
+    loadBookAnimation();
     _scrollController.addListener(_onScroll);
+    _scrollController.addListener(_runAnimation);
   }
 
   @override
@@ -34,10 +38,15 @@ class _QuoteListState extends State<QuoteList> {
       controller: _scrollController,
       physics: const BouncingScrollPhysics(),
       slivers: [
-        if (context.watch<QuoteBloc>().state.status != QuoteStatus.initial)
+        if (context.watch<QuoteBloc>().state.status != QuoteStatus.initial &&
+            context.watch<QuoteBloc>().state.status != QuoteStatus.failure)
           SliverAppBar(
             title: const Text(Strings.homeTitle),
             expandedHeight: 200,
+            floating: true,
+            pinned: true,
+            snap: true,
+            stretch: true,
             actions: [
               Padding(
                 padding:
@@ -53,19 +62,21 @@ class _QuoteListState extends State<QuoteList> {
                 ),
               ),
             ],
-            flexibleSpace: const FlexibleSpaceBar(
-              background: SizedBox()/* RiveAnimation.asset(
-                'assets/bookdrop.riv',
-                
-                fit: BoxFit.cover,
-              ) */,
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.none,
+              background: _bookArtboard == null
+                  ? const SizedBox()
+                  : Rive(
+                      artboard: _bookArtboard!,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
         BlocBuilder<QuoteBloc, QuoteState>(
           builder: (context, state) {
             switch (state.status) {
               case QuoteStatus.failure:
-                return SliverToBoxAdapter(
+                return SliverFillRemaining(
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -73,13 +84,13 @@ class _QuoteListState extends State<QuoteList> {
                         Icon(Icons.network_check,
                             color: Theme.of(context).hintColor),
                         const SizedBox(height: Values.defaultPadding),
-                        const Text('Unable to Load Quotes'),
+                        const Text(Strings.quotesLoadError),
                         const SizedBox(height: Values.defaultPadding),
                         ElevatedButton(
                           onPressed: () => context.read<QuoteBloc>()
                             ..add(QuotesRestared())
                             ..add(QuotesFetched()),
-                          child: const Text('Try Again!'),
+                          child: const Text(Strings.networkInitialError),
                         )
                       ],
                     ),
@@ -88,10 +99,8 @@ class _QuoteListState extends State<QuoteList> {
               case QuoteStatus.success:
                 final quotes = state.result.quotes;
                 if (quotes.isEmpty) {
-                  return const SliverToBoxAdapter(
-                    child: Center(
-                      child: Text('No Quotes at the moment!'),
-                    ),
+                  return const DisplayMessage(
+                    child: Text(Strings.emptyQuotesLoad),
                   );
                 }
                 return SliverList.builder(
@@ -110,10 +119,8 @@ class _QuoteListState extends State<QuoteList> {
                   },
                 );
               case QuoteStatus.initial:
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                return const DisplayMessage(
+                  child: CircularProgressIndicator(),
                 );
             }
           },
@@ -126,6 +133,22 @@ class _QuoteListState extends State<QuoteList> {
     if (_isBottom) context.read<QuoteBloc>().add(QuotesFetched());
   }
 
+  void _bookDropAnimation() {
+    if (_isDropped?.value == false &&
+        _isDropped?.controller.isActive == false) {
+      _isDropped?.value = true;
+    } else if (_isDropped?.value == true &&
+        _isDropped?.controller.isActive == false) {
+      _isDropped?.value = false;
+    }
+  }
+
+  void _runAnimation() {
+    if (_scrollController.offset < _scrollController.initialScrollOffset) {
+      _bookDropAnimation();
+    }
+  }
+
   bool get _isBottom {
     if (!_scrollController.hasClients) return false;
 
@@ -133,6 +156,22 @@ class _QuoteListState extends State<QuoteList> {
     final currentScrollPos = _scrollController.offset;
 
     return currentScrollPos >= (maxScrollPos * 0.9);
+  }
+
+  void loadBookAnimation() {
+    rootBundle.load(Strings.bookdropAnimation).then((data) {
+      final file = RiveFile.import(data);
+      final artboard = file.mainArtboard;
+
+      var controller =
+          StateMachineController.fromArtboard(artboard, 'bookdrop');
+      if (controller != null) {
+        artboard.addController(controller);
+        _isDropped = controller.findInput('isDropped');
+      }
+
+      setState(() => _bookArtboard = artboard);
+    });
   }
 
   @override

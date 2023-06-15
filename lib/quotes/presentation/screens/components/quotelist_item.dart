@@ -12,12 +12,12 @@ class QuoteListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: Values.defaultPadding * 0.75).copyWith(bottom: Values.defaultPadding),
+      margin:
+          const EdgeInsets.symmetric(horizontal: Values.defaultPadding * 0.75)
+              .copyWith(bottom: Values.defaultPadding),
       padding: const EdgeInsets.all(Values.defaultPadding),
       decoration: BoxDecoration(
-          color: context.watch<ThemeCubit>().state.isDarkTheme
-              ? Theme.of(context).primaryColorDark
-              : Theme.of(context).cardColor,
+          color: Theme.of(context).cardColor,
           borderRadius: context.watch<ThemeCubit>().state.isDarkTheme
               ? BorderRadius.circular(10)
               : null,
