@@ -16,7 +16,7 @@ Built using the popular Flutter framework. Outsightful quotes are quite insightf
 ## Screenshots
 \
 <img src="./zreadmefiles/outsightful_quotes.png" width="650px" title="Light mode vs dark mode of an app">
-<img src="./zreadmefiles/outsightful_quotes_full_gif.gif" width="650px" title="Light mode vs dark mode of an app">
+<img src="./zreadmefiles/outsightful_quotes_gif.gif" width="650px" title="Light mode vs dark mode of an app">
 ****
 ## Getting Started
 
