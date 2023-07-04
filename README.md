@@ -3,11 +3,20 @@
 Built using the popular Flutter framework. Outsightful quotes are quite insightful.
 
 ### Some concepts that were utilised in the development of this app
-
+- Bloc State management
+- Bloc Architecture: Separation of concerns (Logic vs UI)
+- Flutter animations: Rive (njeebs)
+- RESTful API: Quote Garden Api
+- Custom Theming: Light Mode vs Dark Mode
+- Modularization: Refactoring Widgets
+- Json serialization: Decoding Json strings into models
+- Event-driven programming
 
 *****
 ## Screenshots
-
+\
+<img src="./zreadmefiles/outsightful_quotes.png" width="650px" title="Light mode vs dark mode of an app">
+<img src="./zreadmefiles/outsightful_quotes_full_gif.gif" width="650px" title="Light mode vs dark mode of an app">
 ****
 ## Getting Started
 
